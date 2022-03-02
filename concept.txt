@@ -1,0 +1,64 @@
+GraphQL
+    use graphql in nestJS
+    npm i @nestjs/graphql graphql-tools graphql apollo-server-express
+
+    nestjs/graphql : nestjs에서만의 graphql방식, work on top of the apollo-server-express
+
+AppModule
+    main.ts로 import되는 유일한 모듈(루트 모듈)
+    main.ts에서 NestFactory.create로 애플리케이션 생성
+
+    AppModule에 필요한 모듈을 추가해야함
+
+    forRoot : configure the GraphQLModule
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+    }),
+
+@Resolver
+    resolvers.js 에서 작성하던 것들을 적으면 됨
+    @Query(return type)
+    @Mutation(return type)
+
+    in graphql [temp], in TS temp[]
+
+entity
+    DB model과 비슷
+    @ObjectType
+    @Field(return type,options)
+
+@Args
+    query의 Args를 받을 수 있음
+    @Args의 type은 graphql과 nest 모두에서 작동함
+    
+    @Mutation((returns) => Boolean)
+    createRestaurant(
+        @Args('name') name: string,
+        @Args('isVegan') isVegan: boolean,
+        @Args('address') address: string,
+        @Args('ownerName') ownerName: string,
+    ):Boolean {
+        return true;
+    }
+
+    딱봐도 귀찮아보임, input Type을 만들 수 있음
+
+Input Type
+    전체 object를 전달 할 수 있음(dto)
+
+@InputType vs @ArgsType
+    InputType : 하나의 obj, arg로써 graphql에 전달, obj를 전달해줌
+    ArgsType : 분리된 값들을 graphql arg로 전달해 줄 수 있도록 해줌, args의 이름을 쓰지 않아도 됨
+
+
+Class Validator to ArgsType
+    npm i class-validator
+    validation pipeline 안만들면, validation 안됨
+    
+    dto에 validation을 적용하면, input data에서 먼저 걸러짐
+
+    Class-validator works by setting metadata about fields via the decorators it uses, and can only do so much on type alone.
+    The library then reads that metadata and checks it against the current type of the object/field and determines if its conditions are satisfied.
+    The library is self contained so it doesn't need to go to a server or anything.
+    라우터나 컨트롤러에 도달하기 전에 json body를 class-transformer를 통해서 class객체로 변환한 뒤에,
+    class-validator로 검증을 하고 타입이 맞다면 컨트롤러/라우터에 전달(continue), 아니라면 바로 리턴
