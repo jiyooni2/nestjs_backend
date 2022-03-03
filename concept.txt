@@ -62,3 +62,38 @@ Class Validator to ArgsType
     The library is self contained so it doesn't need to go to a server or anything.
     라우터나 컨트롤러에 도달하기 전에 json body를 class-transformer를 통해서 class객체로 변환한 뒤에,
     class-validator로 검증을 하고 타입이 맞다면 컨트롤러/라우터에 전달(continue), 아니라면 바로 리턴
+
+TypeORM(Object Relational Mapping)
+    직접 SQL문 작성해서 DB로 보내는 것도 가능하지만
+    TypeORM 사용하면, type을 쓸 수 있고 nest와도 연계 가능, DB상호작용 테스트 가능
+    SQL을 쓰는 대신 코드를 사용해서 DB와 통신 가능
+    많은 DB를 지원함
+    
+pgAdmin은 postgreSQL와 상호작용 하기 윈한 도구 일 뿐,
+    postgreSQL server running check
+
+TypeORM
+    mongoose, sequelize 등등 있음
+    typeORM : TS로 만들어지고 더 친화적
+    npm install --save @nestjs/typeorm typeorm pg
+
+.env in nestJS
+    @nestjs/config
+    
+    runs on top of the dotenv 
+    하지만 nestJS방식으로 동작
+
+
+package.json에서 실행시에 NODE_ENV를 환경변수로 넘겨줄 수 있음
+    use cross-env
+
+use joi in validationSchema
+    data validation tool
+    environment variable validation
+
+how to import Js module in TS
+    import * as Name from "package";
+
+
+entity
+    DB에 저장되는 데이터의 형태를 보여주는 모델
