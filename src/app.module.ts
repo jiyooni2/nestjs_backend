@@ -6,6 +6,8 @@ import { join } from 'path/posix';
 import { RestaurantResolver } from './restaurants/restaurants.reolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
 
 @Module({
   imports: [
@@ -32,13 +34,16 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DB_NAME,
       //TypeORM이 DB에 연결할 때, DB를 모듈의 현재 상태로 마이그레이션
       synchronize: true,
-      logging: false,
+      logging: true,
+      entities: [Restaurant],
     }),
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    RestaurantResolver,
+
+    RestaurantsModule,
   ],
   controllers: [],
   providers: [],

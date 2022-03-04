@@ -68,6 +68,11 @@ TypeORM(Object Relational Mapping)
     TypeORM 사용하면, type을 쓸 수 있고 nest와도 연계 가능, DB상호작용 테스트 가능
     SQL을 쓰는 대신 코드를 사용해서 DB와 통신 가능
     많은 DB를 지원함
+
+    TypeOrmModule
+        synchronize
+            entities 찾고 자동으로 migration
+            DB의 구성을 자동으로 바꿔줌
     
 pgAdmin은 postgreSQL와 상호작용 하기 윈한 도구 일 뿐,
     postgreSQL server running check
@@ -97,3 +102,93 @@ how to import Js module in TS
 
 entity
     DB에 저장되는 데이터의 형태를 보여주는 모델
+    class that maps to a DB table
+    
+@ObjectType
+    자동으로 스키마를 빌드하기 위해 사용하는 GraphQL decorator
+
+@Entity
+    TypeORM이 DB에 저장하게 해줄 것
+    entity를 만든다음에, 어디에 있는지 TypeOrmModule에 알려줘야 저장
+
+can combine @ObjectType and @Entity
+
+Active Record vs Data Mapper
+    Active Record
+        extend BaseEntity
+            user=new User();
+            user.name="a"
+            await user.save();
+            User.find()
+
+    Data Mapper
+        use Repository
+        Repository : Entity와 상호작용 하는걸 담당
+        const userRepository = connection.getRepository(User);
+
+        const user = new User();
+        user.name="a"
+        await userRepository.save(user);
+
+        userRepository.find();
+        
+Data Mapper : 유지관리 하는걸 도와주고, 대규모 앱에서 유용
+Active Record : 소규모 앱에서 단순하게 사용
+
+NestJs+TypeORM : Repository를 사용하는 모듈이 이미 있음
+
+1. import repository
+    imports:[TypeOrmModule.forFeature([Restaurant])]
+2. inject repository to service
+    constructor(
+    @InjectRepository(Restaurant)
+    private readonly restaurants: Repository<Restaurant>,
+  ) {} 
+
+
+create vs save
+    1.save : save in the DB  
+    2.create : not touch the DB, just create class
+        can use short code
+    
+async function 사용하려면, return type은 Promise<value>
+
+@ObjectType, @Field로 graphql type을 만듦
+    자동으로 graphql과 연동되어서 수정할 필요가 없음
+@Entity, @Column로 DB 스키마도 만들고 있음
+    entity를 변경하면 dto도 매번 같이 변경해야 됨
+    어떻게 통합?
+        use Mapped Types
+
+Mapped Types
+    base type을 바탕으로 다른 버전들을 만들 수 있게 해줌
+    
+    Partial Type
+        모든 필드가 required가 아닌 클래스를 만들어줌
+
+    Pick Type
+        몇가지 property를 선택해서 새로운 클래스를 만들어줌
+
+    Omit Type    
+        몇몇 필드를 제외하고 만듦
+
+    Intersection Type
+        combine types
+    
+    모두 Inputtype을 만들어냄
+    base class는 input type
+    Mapped Types의 결과는 @InputType,
+    ObjectType인 객체를 넣었으면, option에 decorator를 변경할 수 있음
+    딱히 쓰지 않는다면, parent class와 동일한 type을 return
+    parent와 child type이 다르다면, decorator 옵션을 넣어 줘야 함
+    entity에 @InputType을 만들어서도 처리 가능
+
+
+    //for the graphql
+    @Field((type) => Boolean, { defaultValue: true })
+    //for the DB
+    @Column({ default: true })
+    //for the dto validation, can send or not
+    @IsOptional()
+    @IsBoolean()
+    isVegan?: boolean;
