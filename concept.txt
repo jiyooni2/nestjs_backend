@@ -73,7 +73,8 @@ TypeORM(Object Relational Mapping)
         synchronize
             entities 찾고 자동으로 migration
             DB의 구성을 자동으로 바꿔줌
-    
+            update the DB to reflect the typeOrm cols.
+
 pgAdmin은 postgreSQL와 상호작용 하기 윈한 도구 일 뿐,
     postgreSQL server running check
 
@@ -113,7 +114,7 @@ entity
 
 can combine @ObjectType and @Entity
 
-Active Record vs Data Mapper
+Active Record vs Data Mapper : Data access patterns to DB
     Active Record
         extend BaseEntity
             user=new User();
@@ -135,7 +136,7 @@ Active Record vs Data Mapper
 Data Mapper : 유지관리 하는걸 도와주고, 대규모 앱에서 유용
 Active Record : 소규모 앱에서 단순하게 사용
 
-NestJs+TypeORM : Repository를 사용하는 모듈이 이미 있음
+NestJs : Repository를 사용하는 built-in modules 많음,
 
 1. import repository
     imports:[TypeOrmModule.forFeature([Restaurant])]
@@ -161,6 +162,7 @@ async function 사용하려면, return type은 Promise<value>
         use Mapped Types
 
 Mapped Types
+    Classes that allows us to generate a type from another type with transformations
     base type을 바탕으로 다른 버전들을 만들 수 있게 해줌
     
     Partial Type
@@ -192,3 +194,22 @@ Mapped Types
     @IsOptional()
     @IsBoolean()
     isVegan?: boolean;
+
+
+TypeORM
+    createDateColumn() : 생성될 때 자동으로 엔티티에 추가
+
+typescript
+    enum A{
+
+    }
+    registerEnumType(UserRole, { name: 'UserRole' });
+        GraphQL type 추가(enum)
+
+Entity Listener
+    특정 entity event를 listen하는 custom logic이 있는 method를 가질 수 있음
+    AfterLoad, BeforeUpdate, BeforeInsert등 여러가지 event있음
+    
+    after create, make entity
+    before save(=before insert), hash
+    
