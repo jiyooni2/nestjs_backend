@@ -11,6 +11,7 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { User } from './users/entities/user.entity';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
+        TOKEN_SECRET: Joi.string().required(),
       }),
     }),
 
@@ -46,8 +48,8 @@ import { User } from './users/entities/user.entity';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
 
+    JwtModule.forRoot({ privateKey: process.env.TOKEN_SECRET }),
     UsersModule,
-
     CommonModule,
   ],
   controllers: [],
