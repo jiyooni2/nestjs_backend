@@ -248,3 +248,34 @@ Module은 2가지 종류가 있음
             ConfigService도
         
 
+Module
+    providers
+        instantiated by Nest injector
+        shared at least across the module
+        원하는 class/value를 provide할 수 있게 해줌
+        Injection 하고 싶은 건 모두 providers에 넣고 nestjs에 요청하면 됨
+
+    
+    controllers
+        url
+    
+    imports
+        list of imported modules that export the providers which are required in this module
+        export한 provider를 쓸 수가 있는 것
+    
+    exports
+        the subset of providers that are provided by this module
+        should be available in other modules which import this module
+
+    JwtModule에서 A를 exports하고,
+    JwtModule을 AppModule에서 import를 하면,
+    A를 AppModule의 전체에서 다 쓸 수 있는 것
+
+    단순히, 인터페이스만 어떤건지, type만 지정해주면 쓸 수 있음
+    클래스 타입만 보고 imports 정의 에서 찾아줌
+    imports정의에 없으면, 못 씀
+
+    providers:[JwtService]
+    = [{provide:JwtService, useClass:JwtService}]
+    이거 말고도, useClass대신 useValue를 사용해서 value를 보내는 등
+    여러 값을 보낼 수 있음

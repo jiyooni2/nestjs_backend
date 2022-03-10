@@ -52,10 +52,7 @@ export class UsersService {
       if (!matchPassword) {
         return { ok: false, error: 'Not Authorized' };
       } else {
-        const token = jwt.sign(
-          { id: user.id },
-          this.config.get('TOKEN_SECRET'),
-        );
+        const token = this.jwtService.sign(user.id);
         return { ok: true, token };
       }
     } catch (e) {
