@@ -13,4 +13,8 @@ export class JwtService {
     //privateKey를 ConfigService를 이용해서 가져올 수도 있음
     return jwt.sign({ id: userId }, this.options.privateKey);
   }
+
+  verify(token: string) {
+    return jwt.verify(token, this.options.privateKey);
+  }
 }

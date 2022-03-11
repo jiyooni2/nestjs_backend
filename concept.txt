@@ -261,11 +261,11 @@ Module
     
     imports
         list of imported modules that export the providers which are required in this module
-        export한 provider를 쓸 수가 있는 것
     
     exports
         the subset of providers that are provided by this module
         should be available in other modules which import this module
+        imports가 아니라 import임
 
     JwtModule에서 A를 exports하고,
     JwtModule을 AppModule에서 import를 하면,
@@ -279,3 +279,60 @@ Module
     = [{provide:JwtService, useClass:JwtService}]
     이거 말고도, useClass대신 useValue를 사용해서 value를 보내는 등
     여러 값을 보낼 수 있음
+
+Middleware in nestJS
+    implements : class가 interface처럼 동작
+    
+    express에서 구현하는 것과 같음 
+    
+    middleware 정의
+    export class JwtMiddleware implements NestMiddleware{
+        use(req:Request,res:Response, next:NextFunction){
+            console.log(req.headers);
+            next();
+        }
+    }
+
+    middleware 등록
+
+    1. in App Module
+    export class AppModule implements NestModule {
+        configure(consumer: MiddlewareConsumer) {
+            consumer
+            .apply(JwtMiddleware)
+            .forRoutes({ path: '/graphql', method: RequestMethod.POST });
+        }
+    }
+
+    2.main.ts
+    app.use(jwtMiddleware);
+    전체 어플리케이션에서 사용
+    클래스는 사용 불가, 함수형태로 넣어야 함
+
+    어떤 route에 middleware를 적용할지 결정
+    route결정 방법은 forRoutes, excludes등 있음
+
+
+graphql로 request 공유
+    req를 graphql resolver에 전달
+    graphql module이 apollo server에서 모든걸 가져와 사용할 수 있음
+
+    A request context is available for each request(called function for each request)
+    when context is defined as a function, it will be called on each request and will receive an
+    object containing a req property, which represents the request itself.
+    
+    can use context in all the resolvers
+
+    configure in the GraphQLModule.forRoot()
+
+resolver can access context using @Context()
+    
+authorization guard
+    request를 다음단계로 진행할지 말지 결정
+    guard가 필요한 resolver에서, @UseGuards(guard)
+    if true, request 진행.
+    if false, request 중단
+
+    using CanActivate, access to context
+    context = http
+    gqlContext로 바꿔줘야함

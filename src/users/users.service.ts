@@ -46,7 +46,6 @@ export class UsersService {
       if (!user) {
         return { ok: false, error: 'User does not exist' };
       }
-      console.log(user);
 
       const matchPassword = compare(password, user.password);
       if (!matchPassword) {
@@ -59,5 +58,9 @@ export class UsersService {
       console.error(e);
       return { ok: false, error: "Couldn't Login" };
     }
+  }
+
+  async findById(id: number): Promise<User> {
+    return this.users.findOne({ id });
   }
 }
