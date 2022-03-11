@@ -174,6 +174,8 @@ Mapped Types
     Omit Type    
         몇몇 필드를 제외하고 만듦
 
+    Partial Type + Pick Type으로 몇가지만 + optional 조합 가능
+
     Intersection Type
         combine types
     
@@ -336,3 +338,17 @@ authorization guard
     using CanActivate, access to context
     context = http
     gqlContext로 바꿔줘야함
+
+Custom Decorator
+    use CreateParamDecorator
+
+repository.update()
+    does not check if entity exist in the DB
+    그저 db에 쿼를 보낼 뿐
+    BeforeUpdate() trigger 못함
+    BeforeUpdate는 특정 entity를 update해야 trigger
+    use save() method
+
+    save()
+        saves all given entities in the db.
+        entity없으면 create, 있으면 update
