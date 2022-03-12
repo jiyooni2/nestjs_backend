@@ -19,6 +19,7 @@ import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
+import { Verification } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { AuthModule } from './auth/auth.module';
       //TypeORM이 DB에 연결할 때, DB를 모듈의 현재 상태로 마이그레이션
       synchronize: true,
       logging: false,
-      entities: [User],
+      entities: [User, Verification],
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({

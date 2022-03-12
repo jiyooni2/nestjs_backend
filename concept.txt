@@ -352,3 +352,32 @@ repository.update()
     save()
         saves all given entities in the db.
         entity없으면 create, 있으면 update
+
+DB relationship
+    @OneToOne
+        @JoinColumn() is required
+        must be set only on one side of the relation
+        the side set @joinColumn on, that side's table will contain a relation id and foreign keys to target entity table.
+    
+    A로부터 B를 접근하고 싶으면, A에 JoinColumn이 있어야,
+    A쪽에 외래키가 생성되면서 쉽게 접근
+
+    TypeORM에서도 마찬가지로 관계는 굉장히 비싼 연산이므로 그냥 탐색하면 안나옴
+    not load relationship default
+    두번째 인자, options에서 relation or loadRelationId 사용
+
+
+random code
+    1.Math.random.toString()
+    2.uuid
+
+password rehash
+    hash한 패스워드를 update하면 다시 또 hash될 수 있음
+    find할 때, password는 포함되지 않도록 configure 
+    
+    @BeforeUpdate,BeforeInsert에서 password가 있어야 hash하게 설정
+    @Column({select:false})
+    
+relation onDelete Cascade
+    @OneToOne((type) => User, { onDelete: 'CASCADE' })
+    CASCADE, DEFAULT 등등 DB 시간에 배웠던 것 다 있음
