@@ -381,3 +381,22 @@ password rehash
 relation onDelete Cascade
     @OneToOne((type) => User, { onDelete: 'CASCADE' })
     CASCADE, DEFAULT 등등 DB 시간에 배웠던 것 다 있음
+    
+try~catch를 service로 다 넘겨줌
+    resolver에서는 결과만 받을 수 있게 아키텍처 구성
+
+    resolver
+        input을 올바는 service로 전달
+        service에는 로직이 정리
+        
+Mailgun
+    Email Delivery Service(API)
+
+email module
+    mailer module in NestJs
+
+cURL
+    console.에서 API를 이용하기 위한 것
+
+FromData
+    node에서 form data를 사용하기 위한 라이브러리

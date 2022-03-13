@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import {
   CreateAccountOutput,
   CreateAccountInput,
@@ -27,24 +27,13 @@ export class UsersResolver {
   async createAccount(
     @Args('input') createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
-    try {
-      //don't have to await, automatically wait for complete
-
-      return this.usersService.createAccount(createAccountInput);
-    } catch (error) {
-      return { error, ok: false };
-    }
+    return this.usersService.createAccount(createAccountInput);
   }
 
   @Mutation((returns) => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      //don't have to await, automatically wait for complete
-      return this.usersService.login(loginInput);
-    } catch (error) {
-      console.error(error);
-      return { ok: false, error };
-    }
+    //don't have to await, automatically wait for complete
+    return this.usersService.login(loginInput);
   }
 
   @Query((returns) => User)
@@ -56,19 +45,7 @@ export class UsersResolver {
   @Query((returns) => UserProfileOutput)
   @UseGuards(AuthGuard)
   async user(@Args() { userId }: UserProfileInput): Promise<UserProfileOutput> {
-    try {
-      const user = await this.usersService.findById(userId);
-      if (!user) {
-        throw Error();
-      }
-      return { ok: true, user };
-    } catch (e) {
-      console.error(e);
-      return {
-        error: 'user not found',
-        ok: false,
-      };
-    }
+    return this.usersService.findById(userId);
   }
 
   @UseGuards(AuthGuard)
@@ -77,23 +54,13 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args('input') editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    try {
-      await this.usersService.editProfile(authUser.id, editProfileInput);
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error };
-    }
+    return this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation((returns) => VerifyEmailOutput)
   async verifyEmail(
     @Args('input') { code }: VerifyEmailInput,
   ): Promise<VerifyEmailOutput> {
-    try {
-      await this.usersService.verifyEmail(code);
-      return { ok: true };
-    } catch (error) {
-      return { ok: false, error };
-    }
+    return this.usersService.verifyEmail(code);
   }
 }
