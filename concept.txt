@@ -400,3 +400,78 @@ cURL
 
 FromData
     node에서 form data를 사용하기 위한 라이브러리
+
+
+npm run test:watch
+    test file
+
+test file
+    fileName.spec.ts
+    jest에서 test file을 .spec.ts로 찾기 때문
+    
+    
+    testing module, test package를 테스팅 하기 전에 만들어야 함
+    유저 서비스만을 가진 독립된 모듈을 제공, 유저 서비스를 테스팅
+    유닛 테스팅 : 가능한 한 테스트를 독립시켜야 함
+
+    typeORM에서 Repository를 제공
+    UserService를 생성하려면, 다른 생성자들이 필요
+        ex)userRepository, JwtModule등등
+    그러기 위해서 Mocking
+
+    Mock Repository
+        mock is fake function
+        진짜로 다른 서비스를 불러오고 싶은게 아님, 유저 서비스만 테스트하고 싶으니까
+
+        fakeRepository, fakeService를 providers에 추가
+        testing하고 싶은 것만 진짜로 불러오면 됨
+    
+    A unit testing, A의 모든 부분을 testing
+        예외도 생각해봐야 함
+        각 라인을 고립된 상태로 만들어야 함
+
+    userRepository를 가져오긴 해야겠는데, mock type으로 만들고 싶음
+    Partial : TS, 모든 타입을 optional
+    Record : TS, <key,value> type 생성
+    Repository<User>의 key를 key로, type은 jest.Mock으로 타입 생성
+    let usersRepository: Partial<Record<keyof Repository<User>, jest.Mock>>;
+
+    mock can fake the return value of the func.
+
+
+    describe("createAccount",()=>{
+        it("test",()=>{
+            usersRepository.findOne.mockResolvedValue({
+                id:1,
+                email:"test@test.com"
+            });
+
+            const res = createAccount execute....
+
+            expect(res).to......
+        })
+    })
+
+    userRepository.findOne
+        mock function
+        중간에 값을 가로채서, 저 값을 resolved return(Promise type return)
+        fake return value
+        실제로 DB에 접속하거나, TypeORM의 repository를 쓰지 않고도 테스팅,
+        독립적으로 UsersService만 testing 가능
+
+    jest의 package.json에서 ignore file, testing file list를 설정할 수 있음
+        "collectCoverageFrom": [
+            "**/*.service.(t|j)s"
+        ],
+        "coveragePathIgnorePatterns": [
+            "node_modules",
+            ".entity.ts",
+            "constants.ts"
+        ]
+        
+        entity나 constants는 테스팅 할 필요가 없음
+    
+    각 함수를 다 mock으로 어떤 return value를 가질지 설정해줘야 함
+
+    args check, 몇번 불렸는지, 인수로 뭐가 넘어갔는지 document 찾아보면 정말 많이 제공함
+    

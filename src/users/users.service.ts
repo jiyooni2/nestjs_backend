@@ -16,6 +16,15 @@ import { Verification } from './entities/verification.entity';
 import { UserProfileOutput } from './dtos/user-profile.dto';
 import { VerifyEmailOutput } from './dtos/verify-email.dto';
 import { MailService } from './../mail/mail.service';
+import {
+  CREATE_ACCOUNT_DUPLICATED_EMAIL,
+  CREATE_ACCOUNT_FAIL,
+  USER_NOT_EXIST,
+  LOGIN_FAIL,
+  LOGIN_PASSWORD_NOT_MATCH,
+  EDIT_PROFILE_FAIL,
+  VERIFICATION_FAIL,
+} from './users.error.msg';
 
 @Injectable()
 export class UsersService {
@@ -36,7 +45,7 @@ export class UsersService {
     try {
       const exists = await this.users.findOne({ email });
       if (exists) {
-        return { ok: false, error: 'there is a user with that email already' };
+        return { ok: false, error: CREATE_ACCOUNT_DUPLICATED_EMAIL };
       }
       const user = await this.users.save(
         this.users.create({ email, password, role }),
@@ -50,7 +59,7 @@ export class UsersService {
 
       return { ok: true };
     } catch (e) {
-      return { ok: false, error: "Couldn't create account" };
+      return { ok: false, error: CREATE_ACCOUNT_FAIL };
     }
 
     //create user & hash the password
@@ -63,19 +72,19 @@ export class UsersService {
         { select: ['password', 'id'] },
       );
       if (!user) {
-        return { ok: false, error: 'User does not exist' };
+        return { ok: false, error: USER_NOT_EXIST };
       }
 
       const matchPassword = compare(password, user.password);
       if (!matchPassword) {
-        return { ok: false, error: 'Not Authorized' };
+        return { ok: false, error: LOGIN_PASSWORD_NOT_MATCH };
       } else {
         const token = this.jwtService.sign(user.id);
         return { ok: true, token };
       }
     } catch (e) {
       console.error(e);
-      return { ok: false, error: "Couldn't Login" };
+      return { ok: false, error: LOGIN_FAIL };
     }
   }
 
@@ -86,7 +95,7 @@ export class UsersService {
         return { ok: true, user };
       }
     } catch (error) {
-      return { ok: false, error: 'User not found' };
+      return { ok: false, error: USER_NOT_EXIST };
     }
   }
 
@@ -111,7 +120,7 @@ export class UsersService {
 
       return { ok: true };
     } catch (error) {
-      return { ok: false, error: 'Could not update profile' };
+      return { ok: false, error: EDIT_PROFILE_FAIL };
     }
   }
 
@@ -129,7 +138,7 @@ export class UsersService {
 
         return { ok: true };
       }
-      return { ok: false, error: 'Verification not found' };
+      return { ok: false, error: VERIFICATION_FAIL };
     } catch (error) {
       return { ok: false, error };
     }
