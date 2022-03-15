@@ -6,16 +6,22 @@ import { Verification } from './entities/verification.entity';
 import { JwtService } from './../jwt/jwt.service';
 import { MailService } from './../mail/mail.service';
 import { Repository } from 'typeorm';
-import { CREATE_ACCOUNT_DUPLICATED_EMAIL } from './users.error.msg';
+import {
+  CREATE_ACCOUNT_DUPLICATED_EMAIL,
+  CREATE_ACCOUNT_FAIL,
+  LOGIN_PASSWORD_NOT_MATCH,
+  USER_NOT_EXIST,
+} from './users.error.msg';
 
 const mockRepository = () => ({
   findOne: jest.fn(),
   save: jest.fn(),
   create: jest.fn(),
+  checkPassword: jest.fn(),
 });
 
 const mockJwtService = {
-  sign: jest.fn(),
+  sign: jest.fn(() => 'signed-token'),
   verify: jest.fn(),
 };
 
@@ -32,8 +38,9 @@ describe('UserService', () => {
   let usersRepository: MockRepository<User>;
   let verificationRepository: MockRepository<Verification>;
   let mailService: MailService;
+  let jwtService: JwtService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         UsersService,
@@ -58,6 +65,7 @@ describe('UserService', () => {
 
     service = module.get<UsersService>(UsersService);
     mailService = module.get<MailService>(MailService);
+    jwtService = module.get<JwtService>(JwtService);
 
     usersRepository = module.get(getRepositoryToken(User));
     verificationRepository = module.get(getRepositoryToken(Verification));
@@ -127,8 +135,57 @@ describe('UserService', () => {
 
       expect(result).toEqual({ ok: true });
     });
+
+    it('should fail on exception', async () => {
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.createAccount(createAccountArgs);
+
+      expect(result).toEqual({ ok: false, error: CREATE_ACCOUNT_FAIL });
+    });
   });
-  it.todo('login');
+
+  describe('login', () => {
+    const loginArgs = { email: 'test@naver.com', password: 'testing' };
+
+    it('should be failed if user does not exist', async () => {
+      usersRepository.findOne.mockResolvedValue(undefined);
+
+      const result = await service.login(loginArgs);
+
+      expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(usersRepository.findOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+      );
+      expect(result).toEqual({ ok: false, error: USER_NOT_EXIST });
+    });
+
+    it('should be failed if password does not match', async () => {
+      const mockedUser = {
+        id: 1,
+        checkPassword: jest.fn(() => Promise.resolve(false)),
+      };
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+
+      const result = await service.login(loginArgs);
+
+      expect(result).toEqual({ ok: false, error: LOGIN_PASSWORD_NOT_MATCH });
+    });
+
+    it('should success if password match', async () => {
+      const mockedUser = {
+        id: 1,
+        checkPassword: jest.fn(() => Promise.resolve(true)),
+      };
+      usersRepository.findOne.mockResolvedValue(mockedUser);
+
+      const result = await service.login(loginArgs);
+
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
+      expect(jwtService.sign).toHaveBeenCalledWith(expect.any(Number));
+      expect(result).toEqual({ ok: true, token: 'signed-token' });
+    });
+  });
   it.todo('findById');
   it.todo('editProfile');
   it.todo('verifyEmail');

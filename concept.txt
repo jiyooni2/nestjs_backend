@@ -474,4 +474,15 @@ test file
     각 함수를 다 mock으로 어떤 return value를 가질지 설정해줘야 함
 
     args check, 몇번 불렸는지, 인수로 뭐가 넘어갔는지 document 찾아보면 정말 많이 제공함
+    error가 발생하게, exception이 발생하게 할 수 있음
+
+    
+    beforeAll
+        module이 한번만 처음에 만들어짐
+        call횟수가 누적될 수 있음
+        보통 E2E testing
+
+    beforeEach
+        module이 각 테스트 직전에 새로 만들어짐
+        보통 unit testing
     

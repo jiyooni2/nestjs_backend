@@ -7,9 +7,7 @@ import {
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
-import { compare } from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 import { JwtService } from './../jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
@@ -75,7 +73,7 @@ export class UsersService {
         return { ok: false, error: USER_NOT_EXIST };
       }
 
-      const matchPassword = compare(password, user.password);
+      const matchPassword = await user.checkPassword(password, user.password);
       if (!matchPassword) {
         return { ok: false, error: LOGIN_PASSWORD_NOT_MATCH };
       } else {
