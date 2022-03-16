@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import {
   CREATE_ACCOUNT_DUPLICATED_EMAIL,
   CREATE_ACCOUNT_FAIL,
+  EDIT_PROFILE_FAIL,
   LOGIN_PASSWORD_NOT_MATCH,
   USER_NOT_EXIST,
 } from './users.error.msg';
@@ -18,6 +19,7 @@ const mockRepository = () => ({
   save: jest.fn(),
   create: jest.fn(),
   checkPassword: jest.fn(),
+  findOneOrFail: jest.fn(),
 });
 
 const mockJwtService = {
@@ -186,7 +188,79 @@ describe('UserService', () => {
       expect(result).toEqual({ ok: true, token: 'signed-token' });
     });
   });
-  it.todo('findById');
-  it.todo('editProfile');
+
+  describe('findById', () => {
+    const findByIdArgs = { id: 1 };
+    it('should find an existing user', async () => {
+      usersRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
+      const result = await service.findById(1);
+
+      expect(result).toEqual({ ok: true, user: findByIdArgs });
+    });
+
+    it('should fail if no user is found', async () => {
+      usersRepository.findOneOrFail.mockRejectedValue(new Error());
+      const result = await service.findById(1);
+
+      expect(result).toEqual({ ok: false, error: USER_NOT_EXIST });
+    });
+  });
+
+  describe('editProfile', () => {
+    it('should change email', async () => {
+      const oldUser = { email: 'old@old.com', verified: true };
+
+      const editProfileArgs = { input: { email: 'new@new.com' }, userId: 1 };
+      const newVerification = { code: 'code' };
+
+      usersRepository.findOne.mockResolvedValue(oldUser);
+      verificationRepository.create.mockReturnValue(newVerification);
+      verificationRepository.save.mockResolvedValue(newVerification);
+
+      const result = await service.editProfile(
+        editProfileArgs.userId,
+        editProfileArgs.input,
+      );
+
+      expect(usersRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(usersRepository.findOne).toHaveBeenCalledWith({
+        id: editProfileArgs.userId,
+      });
+      expect(verificationRepository.create).toHaveBeenCalledWith({
+        user: { email: editProfileArgs.input.email, verified: false },
+      });
+      expect(verificationRepository.save).toHaveBeenCalledWith(newVerification);
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
+        editProfileArgs.input.email,
+        newVerification.code,
+      );
+    });
+
+    it('should change password', async () => {
+      const editProfileArgs = { input: { password: 'newPassword' }, userId: 1 };
+
+      usersRepository.findOne.mockResolvedValue({ password: 'old' });
+
+      const result = await service.editProfile(
+        editProfileArgs.userId,
+        editProfileArgs.input,
+      );
+
+      expect(usersRepository.save).toHaveBeenCalledTimes(1);
+      expect(usersRepository.save).toHaveBeenCalledWith(editProfileArgs.input);
+      expect(result).toEqual({ ok: true });
+    });
+
+    it('should fail on exception', async () => {
+      const editProfileArgs = { input: { password: 'newPassword' }, userId: 1 };
+
+      usersRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.editProfile(
+        editProfileArgs.userId,
+        editProfileArgs.input,
+      );
+      expect(result).toEqual({ ok: false, error: EDIT_PROFILE_FAIL });
+    });
+  });
   it.todo('verifyEmail');
 });
