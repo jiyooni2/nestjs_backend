@@ -7,7 +7,6 @@ import {
 } from './dtos/create-account.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
 import { User } from './entities/user.entity';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from './../jwt/jwt.service';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { Verification } from './entities/verification.entity';
@@ -22,6 +21,7 @@ import {
   LOGIN_PASSWORD_NOT_MATCH,
   EDIT_PROFILE_FAIL,
   VERIFICATION_FAIL,
+  VERIFICATION_NOT_EXIST,
 } from './users.error.msg';
 
 @Injectable()
@@ -123,21 +123,21 @@ export class UsersService {
 
   async verifyEmail(code: string): Promise<VerifyEmailOutput> {
     try {
-      const { user } = await this.verifications.findOne(
+      const verification = await this.verifications.findOne(
         { code },
         { relations: ['user'] },
       );
 
-      if (user) {
-        user.verified = true;
-        this.users.save(user);
+      if (verification) {
+        verification.user.verified = true;
+        await this.users.save(verification.user);
         await this.verifications.delete({ code });
 
         return { ok: true };
       }
-      return { ok: false, error: VERIFICATION_FAIL };
+      return { ok: false, error: VERIFICATION_NOT_EXIST };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: VERIFICATION_FAIL };
     }
   }
 }

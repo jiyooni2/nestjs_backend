@@ -5,4 +5,5 @@ export const USER_NOT_EXIST = 'User Not Found';
 export const LOGIN_PASSWORD_NOT_MATCH = 'Not Authorized';
 export const LOGIN_FAIL = "Couldn't Login";
 export const EDIT_PROFILE_FAIL = "Couldn't Update Profile";
-export const VERIFICATION_FAIL = 'Verification Not Found';
+export const VERIFICATION_NOT_EXIST = 'Verification Not Found';
+export const VERIFICATION_FAIL = "Couldn't Verification";
