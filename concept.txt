@@ -486,3 +486,17 @@ test file
         module이 각 테스트 직전에 새로 만들어짐
         보통 unit testing
     
+E2E testing
+    module 못 찾으면, jest-e2e.json 환경 변경
+    TypeORM이 migration 알아서 다 해주고, 다 사용한 뒤에는 dropDatabase
+    
+    GraphQL
+        엄청 많은 post request 더미
+        Request Payload의 query에 넣어서 보냄
+
+    afterAll에서 dropDatabase()를 하니까, 테스팅 동안의 DB변경사항은 다 저장됨
+
+    toBe vs to Equal
+        toBe : 정확해야 함
+    
+    
