@@ -499,4 +499,7 @@ E2E testing
     toBe vs to Equal
         toBe : 정확해야 함
     
+    module에서 repository를 get할 수 있음
+
+    request.set을 통해서, header를 setting할 수 있음
     

@@ -53,7 +53,7 @@ type VerifyEmailOutput {
 type Query {
   hi: Boolean!
   me: User!
-  user(userId: Float!): UserProfileOutput!
+  userProfile(userId: Float!): UserProfileOutput!
 }
 
 type Mutation {
