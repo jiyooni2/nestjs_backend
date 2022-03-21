@@ -6,46 +6,48 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { CoreEntity } from './../../common/entities/core.entity';
+import { Category } from './category.entity';
+import { User } from './../../users/entities/user.entity';
 
 //graphql 관점에서 어떻게 생겼는지 묘사
-@InputType({ isAbstract: true })
+@InputType('RestaurantInputType', { isAbstract: true })
 @ObjectType()
 @Entity()
-export class Restaurant {
-  @PrimaryGeneratedColumn()
-  @Field((type) => Number)
-  @IsNumber()
-  id: number;
-
-  //should return string
+export class Restaurant extends CoreEntity {
+  //for the DB,typeORM
   @Column()
+  //for the graphql
   @Field((type) => String)
+  //for the dto validation, can send or not
   @IsString()
   @Length(5)
   name: string;
 
-  //for the graphql
-  @Field((type) => Boolean, { defaultValue: true })
-  //for the DB
-  @Column({ default: true })
-  //for the dto validation, can send or not
-  @IsOptional()
-  @IsBoolean()
-  isVegan: boolean;
+  @Field((type) => String)
+  @Column()
+  @IsString()
+  coverImage: string;
 
   @Field((type) => String)
   @Column()
   @IsString()
   address: string;
 
-  @Field((type) => String)
-  @Column()
-  @IsString()
-  ownerName: string;
+  @ManyToOne((type) => User, (user) => user.restaurants, {
+    nullable: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @Field((type) => User)
+  owner: User;
 
-  @Field((type) => String)
-  @Column()
-  @IsString()
-  categoryName: string;
+  @ManyToOne((type) => Category, (category) => category.restaurants, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @Field((type) => Category, { nullable: true })
+  category: Category;
 }

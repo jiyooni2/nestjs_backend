@@ -502,4 +502,39 @@ E2E testing
     module에서 repository를 get할 수 있음
 
     request.set을 통해서, header를 setting할 수 있음
-    
+    then : 한 이후에 또 testing
+    e2e testing에서 unit testing에서 발견 못한 버그를 찾아낼 수 있음
+        DB를 직접 생성해서 사용하니까
+
+
+
+ManyToOne, OneToMany 같은 것 설정할때,
+    DB nullable이랑, onUpdate, onDelete 설정
+
+ObjectType과 InputType이 같은 이름을 가지면 type을 구분 못해서 에러가 발생
+    이름을 다르게 지어주는게 좋음
+
+
+Payment
+    Paddle
+        온라인 디지털 내용물에만 판매 가능
+        API를 만들고, 월마다 몇 $ 청구 가능
+        소프트웨어 판매 가능
+        인터넷 포인트도 가능
+        실제 물건(티셔츠,물건) 불가능
+        회사가 아닌 개인도 사용 가능
+        보안, 신용카드 정보 등 모두 다 프론트엔드에서 처리해줌
+
+
+
+    Stripe
+        한국 지원 X
+        실제 회사가 있어야 사용 가능
+        
+    Braintree
+        실제 회사가 있어야 함
+        모든 국가 지원 X
+
+멱등성
+
+

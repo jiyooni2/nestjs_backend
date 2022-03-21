@@ -3,6 +3,7 @@ import { BeforeInsert, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { CoreEntity } from './../../common/entities/core.entity';
 import { User } from './user.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { IsString } from 'class-validator';
 
 @InputType({ isAbstract: true })
 @ObjectType()
@@ -13,6 +14,7 @@ export class Verification extends CoreEntity {
   //verification code
   @Column()
   @Field((type) => String)
+  @IsString()
   code: string;
 
   @OneToOne((type) => User, { onDelete: 'CASCADE' })
