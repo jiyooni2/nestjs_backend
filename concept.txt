@@ -514,6 +514,14 @@ ManyToOne, OneToMany 같은 것 설정할때,
 ObjectType과 InputType이 같은 이름을 가지면 type을 구분 못해서 에러가 발생
     이름을 다르게 지어주는게 좋음
 
+@SetMetaData()
+    Owner인 경우에만 createRestaurant 가능해야 함
+    Delivery인 경우에만 Delivery 가능해야 함
+    resolver에서 추가적으로 이용할 수 있는 데이터를 추가시키는 것
+
+AuthGuard를 모든 resolver에 추가하고 싶으면,
+    AuthModule에서 provide : APP_GUARD
+    하면 모든 곳에 다 추가됨
 
 Payment
     Paddle
