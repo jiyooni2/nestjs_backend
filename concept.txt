@@ -543,6 +543,25 @@ Payment
         실제 회사가 있어야 함
         모든 국가 지원 X
 
-멱등성
+관계 => expensive
+    relation이나 loadRelationIds:true 등의 옵션을 주어야 함
+    옵션을 줘서, 관계를 불러와야 함
+    loadRelationId를 쓰면, 관계의 id만 불러옴, 모든 걸 가져오지 않음
 
+@RelationId()
+    RelationId에 대해서 Number로 추가적인 필드를 가질 수 있음
+    Automatically load,
+    option으로 줄 필요 없음, 비싼 연산이 아님
+
+
+CustomRepository
+    Repository에 custom method를 등록할 수 있음
+    document보면 3가지 방법이 있음
+    public method를 원하는지에 따라서 방법이 갈림
+    
+    Repository를 CustomRepository로 바꿧으면, Inject될 수 있게,
+    repository를 module에서 load해줘야 겠지(in imports, TypeOrmModule.forFeature)
+
+
+멱등성
 

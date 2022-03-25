@@ -8,7 +8,7 @@ import * as Joi from 'joi';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path/posix';
-import { RestaurantResolver } from './restaurants/restaurants.reolver';
+import { RestaurantResolver } from './restaurants/restaurants.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Restaurant } from './restaurants/entities/restaurant.entity';

@@ -50,6 +50,11 @@ type CreateRestaurantOutput {
   error: String
 }
 
+type EditRestaurantOutput {
+  ok: Boolean!
+  error: String
+}
+
 type CreateAccountOutput {
   ok: Boolean!
   error: String
@@ -90,6 +95,7 @@ type Mutation {
   editProfile(input: EditProfileInput!): EditProfileOutput!
   verifyEmail(input: VerifyEmailInput!): VerifyEmailOutput!
   createRestaurant(input: CreateRestaurantInput!): CreateRestaurantOutput!
+  editRestaurant(input: EditRestaurantInput!): EditRestaurantOutput!
 }
 
 input CreateAccountInput {
@@ -117,4 +123,12 @@ input CreateRestaurantInput {
   coverImage: String!
   address: String!
   categoryName: String!
+}
+
+input EditRestaurantInput {
+  name: String
+  coverImage: String
+  address: String
+  categoryName: String
+  restaurantId: Float!
 }
