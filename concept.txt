@@ -561,7 +561,26 @@ CustomRepository
     
     Repository를 CustomRepository로 바꿧으면, Inject될 수 있게,
     repository를 module에서 load해줘야 겠지(in imports, TypeOrmModule.forFeature)
+    
 
+repository.remove vs repository.delete
+    remove
+        if it contains an array of Entities.
+        존재하는 아이템을 지워야 함(없으면 오류 발생)
+        지울 때 db에 두번 접근(있는지 확인 후 삭제)
+
+    delete
+        if you know the condition.
+        존재하는지 체킹하지 않음(오류 발생 X)
+        지울 때 빠르게 삭제(있는지 체킹 안함)
+
+Computed Field
+    GraphQL type으로 일단 선언해야겠지
+    @ResolveField()로 선언
+    entity,db에 저장되는 것 아님, user의 상태에 따라서 유연하게 계산
+
+    부른 주체를 @Parent() 로 가져올 수 있음 
+    하나하나씩 줌, 전체를 주지 않음
 
 멱등성
 
