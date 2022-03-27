@@ -20,6 +20,7 @@ import {
   DeleteRestaurantOutput,
 } from './dtos/delete-restaurant.dto';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
+import { CategoryInput, CategoryOutput } from './dtos/category.dto';
 
 @Injectable()
 export class RestaurantsService {
@@ -135,6 +136,37 @@ export class RestaurantsService {
       //return this.restaurants.count({category});
     } catch (error) {
       return -1;
+    }
+  }
+
+  async findCategoryBySlug({
+    slug,
+    page,
+  }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      const category = await this.categories.findOne(
+        { slug },
+        // { relations: ['restaurants'] },
+      );
+      if (!category) {
+        return { ok: false, error: 'Category Not Found' };
+      }
+
+      //pagination
+      const restaurants = await this.restaurants.find({
+        where: {
+          category,
+        },
+        take: 25,
+        skip: (page - 1) * 25,
+      });
+      category.restaurants = restaurants;
+
+      const totalResults = await this.restaurantCount(category);
+
+      return { ok: true, category, totalPages: Math.ceil(totalResults / 25) };
+    } catch (error) {
+      return { ok: false, error };
     }
   }
 }

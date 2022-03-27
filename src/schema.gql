@@ -67,6 +67,13 @@ type AllCategoriesOutput {
   categories: [Category!]
 }
 
+type CategoryOutput {
+  ok: Boolean!
+  error: String
+  totalPages: Float
+  category: Category
+}
+
 type CreateAccountOutput {
   ok: Boolean!
   error: String
@@ -100,6 +107,12 @@ type Query {
   userProfile(userId: Float!): UserProfileOutput!
   restaurants: [Restaurant!]!
   allCategories: AllCategoriesOutput!
+  seeCategory(input: CategoryInput!): CategoryOutput!
+}
+
+input CategoryInput {
+  page: Float = 1
+  slug: String!
 }
 
 type Mutation {
