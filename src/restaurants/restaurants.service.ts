@@ -21,6 +21,19 @@ import {
 } from './dtos/delete-restaurant.dto';
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import {
+  SeeRestaurantsInput,
+  SeeRestaurantsOutput,
+} from './dtos/see-restraunts.dto';
+import {
+  SeeRestaurantInput,
+  SeeRestaurantOutput,
+} from './dtos/see-restaurants.dto';
+import {
+  SearchRestaurantsInput,
+  SearchRestaurantsOutput,
+} from './dtos/search-restaurant.dto';
+import { Raw } from 'typeorm';
 
 @Injectable()
 export class RestaurantsService {
@@ -42,6 +55,12 @@ export class RestaurantsService {
     //create({name:CreateRestaurantInput.name,....})
     //can trust the dto
     try {
+      const restaurant = await this.restaurants.findOne({
+        name: createRestaurantInput.name,
+      });
+      if (restaurant) {
+        return { ok: false, error: 'Restaurant with the name already exists' };
+      }
       const newRestaurant = this.restaurants.create(createRestaurantInput);
 
       newRestaurant.owner = owner;
@@ -165,6 +184,60 @@ export class RestaurantsService {
       const totalResults = await this.restaurantCount(category);
 
       return { ok: true, category, totalPages: Math.ceil(totalResults / 25) };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async seeRestaurants({
+    page,
+  }: SeeRestaurantsInput): Promise<SeeRestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        take: 25,
+        skip: (page - 1) * 25,
+      });
+      return {
+        ok: true,
+        restaurants,
+        totalPages: Math.ceil(totalResults / 25),
+      };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async seeRestaurant({
+    restaurantId,
+  }: SeeRestaurantInput): Promise<SeeRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne(restaurantId);
+      if (!restaurant) {
+        return { ok: false, error: 'Restaurant Not Found' };
+      }
+
+      return { ok: true, restaurant };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async searchRestaurants({
+    query,
+    page,
+  }: SearchRestaurantsInput): Promise<SearchRestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        where: { name: Raw((name) => `${name} ILIKE '%${query}%'`) },
+        skip: (page - 1) * 25,
+        take: 25,
+      });
+
+      return {
+        ok: true,
+        restaurants,
+        totalPages: Math.ceil(totalResults / 25),
+      };
     } catch (error) {
       return { ok: false, error };
     }

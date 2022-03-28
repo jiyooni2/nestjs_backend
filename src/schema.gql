@@ -74,6 +74,26 @@ type CategoryOutput {
   category: Category
 }
 
+type SeeRestaurantsOutput {
+  ok: Boolean!
+  error: String
+  totalPages: Float
+  restaurants: [Restaurant!]
+}
+
+type SeeRestaurantOutput {
+  ok: Boolean!
+  error: String
+  restaurant: Restaurant
+}
+
+type SearchRestaurantsOutput {
+  ok: Boolean!
+  error: String
+  totalPages: Float
+  restaurants: [Restaurant!]
+}
+
 type CreateAccountOutput {
   ok: Boolean!
   error: String
@@ -108,11 +128,27 @@ type Query {
   restaurants: [Restaurant!]!
   allCategories: AllCategoriesOutput!
   seeCategory(input: CategoryInput!): CategoryOutput!
+  seeRestaurants(input: SeeRestaurantsInput!): SeeRestaurantsOutput!
+  seeRestaurant(input: SeeRestaurantInput!): SeeRestaurantOutput!
+  searchRestaurants(input: SearchRestaurantsInput!): SearchRestaurantsOutput!
 }
 
 input CategoryInput {
   page: Float = 1
   slug: String!
+}
+
+input SeeRestaurantsInput {
+  page: Float = 1
+}
+
+input SeeRestaurantInput {
+  restaurantId: Float!
+}
+
+input SearchRestaurantsInput {
+  page: Float = 1
+  query: String!
 }
 
 type Mutation {

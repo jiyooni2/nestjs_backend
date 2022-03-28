@@ -28,6 +28,18 @@ import {
 import { AllCategoriesOutput } from './dtos/all-categories.dto';
 import { Category } from './entities/category.entity';
 import { CategoryInput, CategoryOutput } from './dtos/category.dto';
+import {
+  SeeRestaurantsOutput,
+  SeeRestaurantsInput,
+} from './dtos/see-restraunts.dto';
+import {
+  SeeRestaurantInput,
+  SeeRestaurantOutput,
+} from './dtos/see-restaurants.dto';
+import {
+  SearchRestaurantsInput,
+  SearchRestaurantsOutput,
+} from './dtos/search-restaurant.dto';
 
 //resolver of Restaurant entity
 @Resolver()
@@ -92,5 +104,26 @@ export class CategoryResolver {
     @Args('input') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput);
+  }
+
+  @Query((type) => SeeRestaurantsOutput)
+  seeRestaurants(
+    @Args('input') seeRestaurantsInput: SeeRestaurantsInput,
+  ): Promise<SeeRestaurantsOutput> {
+    return this.restaurantService.seeRestaurants(seeRestaurantsInput);
+  }
+
+  @Query((returns) => SeeRestaurantOutput)
+  seeRestaurant(
+    @Args('input') seeRestaurantInput: SeeRestaurantInput,
+  ): Promise<SeeRestaurantOutput> {
+    return this.restaurantService.seeRestaurant(seeRestaurantInput);
+  }
+
+  @Query((returns) => SearchRestaurantsOutput)
+  searchRestaurants(
+    @Args('input') searchRestaurantsInput: SearchRestaurantsInput,
+  ): Promise<SearchRestaurantsOutput> {
+    return this.restaurantService.searchRestaurants(searchRestaurantsInput);
   }
 }
