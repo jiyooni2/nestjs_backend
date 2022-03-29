@@ -35,6 +35,24 @@ enum UserRole {
   Delivery
 }
 
+type DishOption {
+  name: String!
+  choices: [String!]
+  extra: Float
+}
+
+type Dish {
+  id: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  price: Float!
+  photo: String
+  description: String
+  restaurant: Restaurant!
+  options: [DishOption!]
+}
+
 type Restaurant {
   id: Float!
   createdAt: DateTime!
@@ -44,6 +62,7 @@ type Restaurant {
   address: String!
   owner: User!
   category: Category
+  menu: [Dish!]!
 }
 
 type CreateRestaurantOutput {
@@ -92,6 +111,11 @@ type SearchRestaurantsOutput {
   error: String
   totalPages: Float
   restaurants: [Restaurant!]
+}
+
+type CreateDishOutput {
+  ok: Boolean!
+  error: String
 }
 
 type CreateAccountOutput {
@@ -159,6 +183,7 @@ type Mutation {
   createRestaurant(input: CreateRestaurantInput!): CreateRestaurantOutput!
   editRestaurant(input: EditRestaurantInput!): EditRestaurantOutput!
   deleteRestaurant(input: DeleteRestaurantInput!): DeleteRestaurantOutput!
+  createDish(input: CreateDishInput!): CreateDishOutput!
 }
 
 input CreateAccountInput {
@@ -198,4 +223,18 @@ input EditRestaurantInput {
 
 input DeleteRestaurantInput {
   restaurantId: Float!
+}
+
+input CreateDishInput {
+  name: String!
+  price: Float!
+  description: String
+  options: [DishOptionInputType!]
+  restaurantId: Float!
+}
+
+input DishOptionInputType {
+  name: String!
+  choices: [String!]
+  extra: Float
 }

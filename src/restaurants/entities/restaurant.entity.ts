@@ -10,12 +10,14 @@ import {
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
 import { CoreEntity } from './../../common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from './../../users/entities/user.entity';
+import { Dish } from './dish.entity';
 
 //graphql 관점에서 어떻게 생겼는지 묘사
 @InputType('RestaurantInputType', { isAbstract: true })
@@ -59,4 +61,10 @@ export class Restaurant extends CoreEntity {
   })
   @Field((type) => Category, { nullable: true })
   category: Category;
+
+  @OneToMany((type) => Dish, (dish) => dish.restaurant, {
+    nullable: true,
+  })
+  @Field((type) => [Dish])
+  menu: Dish[];
 }

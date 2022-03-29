@@ -22,6 +22,7 @@ import { AuthModule } from './auth/auth.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
 import { Category } from './restaurants/entities/category.entity';
+import { Dish } from './restaurants/entities/dish.entity';
 
 @Module({
   imports: [
@@ -53,7 +54,7 @@ import { Category } from './restaurants/entities/category.entity';
       //TypeORM이 DB에 연결할 때, DB를 모듈의 현재 상태로 마이그레이션
       synchronize: true,
       logging: false,
-      entities: [User, Verification, Restaurant, Category],
+      entities: [User, Verification, Restaurant, Category, Dish],
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -66,6 +67,7 @@ import { Category } from './restaurants/entities/category.entity';
     UsersModule,
     CommonModule,
     AuthModule,
+
     MailModule.forRoot({
       apiKey: process.env.MAILGUN_API_KEY,
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
