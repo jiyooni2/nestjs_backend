@@ -1,4 +1,11 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { CoreEntity } from './../../common/entities/core.entity';
 import {
   Field,
@@ -10,6 +17,7 @@ import * as bcrypt from 'bcrypt';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from './../../restaurants/entities/restaurant.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 export enum UserRole {
   Client = 'Client',
@@ -46,6 +54,14 @@ export class User extends CoreEntity {
   @ManyToOne((type) => Restaurant, (restaurant) => restaurant.owner)
   @Field((type) => [Restaurant])
   restaurants: Restaurant[];
+
+  @OneToMany((type) => Order, (order) => order.customer)
+  @Field((type) => [Order])
+  orders: Order[];
+
+  @OneToMany((type) => Order, (order) => order.driver)
+  @Field((type) => [Order])
+  rides: Order[];
 
   @BeforeInsert()
   @BeforeUpdate()

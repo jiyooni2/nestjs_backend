@@ -18,6 +18,7 @@ import { CoreEntity } from './../../common/entities/core.entity';
 import { Category } from './category.entity';
 import { User } from './../../users/entities/user.entity';
 import { Dish } from './dish.entity';
+import { Order } from '../../orders/entities/order.entity';
 
 //graphql 관점에서 어떻게 생겼는지 묘사
 @InputType('RestaurantInputType', { isAbstract: true })
@@ -67,4 +68,8 @@ export class Restaurant extends CoreEntity {
   })
   @Field((type) => [Dish])
   menu: Dish[];
+
+  @OneToMany((type) => Order, (order) => order.restaurant)
+  @Field((type) => [Order])
+  orders: Order[];
 }
