@@ -7,7 +7,7 @@ import { Restaurant } from './restaurant.entity';
 
 @InputType('DishChoiceInputType', { isAbstract: true })
 @ObjectType()
-class DishChoice {
+export class DishChoice {
   @Field((type) => String)
   name: string;
 
@@ -17,14 +17,14 @@ class DishChoice {
 
 @InputType('DishOptionInputType', { isAbstract: true })
 @ObjectType()
-class DishOption {
+export class DishOption {
   //맛, 만약 고기추가 이런거라면 초이스가 없이 가격만 늘어나겠지
   //사이즈라면, DishChoice에 L : extra 2000 XL : extra 5000 등등...
   @Field((type) => String)
   name: string;
 
   //초코맛, 딸기맛 등등, 가격추가가 없을 수도 있겠지
-  @Field((type) => [String], { nullable: true })
+  @Field((type) => [DishChoice], { nullable: true })
   choices?: DishChoice[];
 
   @Field((type) => Number, { nullable: true })
@@ -71,8 +71,4 @@ export class Dish extends CoreEntity {
   @Field((type) => [DishOption], { nullable: true })
   @Column({ type: 'json', nullable: true })
   options?: DishOption[];
-
-  @ManyToMany((type) => Order, (order) => order.dishes)
-  @Field((type) => [Order])
-  orders: [Order];
 }

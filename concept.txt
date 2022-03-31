@@ -140,6 +140,8 @@ NestJs : Repository를 사용하는 built-in modules 많음,
 
 1. import repository
     imports:[TypeOrmModule.forFeature([Restaurant])]
+    service에서 사용할 repository는 다 적어줘야 함
+
 2. inject repository to service
     constructor(
     @InjectRepository(Restaurant)
@@ -598,18 +600,39 @@ typeORM
 @OneToMany(arg1,arg2)
     arg1 : OneToMany의 type
     arg2 : function, Dish의 Restaurant를 어디서 찾을 수 있는지 알려줌
+            항상 명시해줄 필요는 없음
+            반대의 관계에서 찾을 필요 없으면 안써도 됨
 
 json type
     구조화된 데이터를 저장
     특정 형태를 가진 데이터 저장
-    
+    DishOption을 json type으로 저장
+        만약 relation의 관계로 이를 저장했다면, 가게 주인이 option을 바꾸면
+        order에 dish의 option이 바뀌거나 set NULL이거나 등등.. 애매해짐
+        하지만 json은 just string!
+        orderItem : one Dish,
+        dish has many items
+    just json type, 실수를 해도 전혀 잡아낼 수 없음
+    frontend에서 강제로 구조화를 해야 함
+    새로운 resolver,dto,service 만들 일 없음
+    flexibility는 올라가겠지.
 
 1:N : OneToMany
 N:1 : ManyToOne
 M:N : ManyToMany
     @JoinTable()
     소유하고 있는 쪽의 relation에 추가
+    TypeORM을 사용하면 M:N 관계를 해소해주기 위해서 자동으로 테이블 생성
+    그러면... 굳이 ER 다이어그램에서 DB형태로 바꿀 필요가 없는 건 아닐까 싶음
 
+forEach에서 return
+    using return in a forEach() is equivalent to a continue in loop
+    There is no way to stop or break a forEach() loop other than by throwing an exception. 
+    If you need such behavior, the forEach() method is the wrong tool.
 
+    return 하고 싶으면 for~of 사용!
+    TS가 도와주지 않으면 체킹해보자!!
+
+    
 멱등성
 
