@@ -4,9 +4,11 @@ import { Repository } from 'typeorm';
 import { Order } from './entities/order.entity';
 import { Restaurant } from './../restaurants/entities/restaurant.entity';
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto';
-import { User } from '../users/entities/user.entity';
+import { User, UserRole } from '../users/entities/user.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { Dish } from '../restaurants/entities/dish.entity';
+import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
+import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -85,6 +87,77 @@ export class OrdersService {
       );
 
       return { ok: true };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async getOrders(
+    user: User,
+    { status }: GetOrdersInput,
+  ): Promise<GetOrdersOutput> {
+    try {
+      let orders: Order[];
+
+      if (user.role === UserRole.Client) {
+        orders = await this.orders.find({
+          where: {
+            customer: user,
+            ...(status && { status }),
+          },
+        });
+      } else if (user.role === UserRole.Delivery) {
+        orders = await this.orders.find({
+          where: {
+            driver: user,
+            ...(status && { status }),
+          },
+        });
+      } else if (user.role === UserRole.Owner) {
+        const restaurants = await this.restaurants.find({
+          where: { owner: User },
+          relations: ['orders'],
+        });
+
+        orders = restaurants.map((restaurant) => restaurant.orders).flat(1);
+        if (status) {
+          orders = orders.filter((order) => order.status === status);
+        }
+      }
+
+      return { ok: true, orders };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async getOrder(
+    user: User,
+    { id: orderId }: GetOrderInput,
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
+
+      if (!order) {
+        return { ok: false, error: 'Order Not Found' };
+      }
+
+      if (user.role === UserRole.Client && order.customerId !== user.id) {
+        return { ok: false, error: 'Not Authorized' };
+      }
+      if (user.role === UserRole.Delivery && order.driverId !== user.id) {
+        return { ok: false, error: 'Not Authorized' };
+      }
+      if (
+        user.role === UserRole.Owner &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return { ok: false, error: 'Not Authorized' };
+      }
+
+      return { ok: true, order };
     } catch (error) {
       return { ok: false, error };
     }

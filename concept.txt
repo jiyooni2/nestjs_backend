@@ -633,6 +633,10 @@ forEach에서 return
     return 하고 싶으면 for~of 사용!
     TS가 도와주지 않으면 체킹해보자!!
 
+array.flat()
+    array안에 array가 있으면, args차원의 array로 만들어줌
+    모든 하위 array의 요소와 함께 새 array를 리턴 
+    ex) flat(1) : 1차원 array안에 모든 아이템을 넣어줌
     
 멱등성
 

@@ -199,6 +199,18 @@ type CreateOrderOutput {
   error: String
 }
 
+type GetOrdersOutput {
+  ok: Boolean!
+  error: String
+  orders: [Order!]
+}
+
+type GetOrderOutput {
+  ok: Boolean!
+  error: String
+  order: Order
+}
+
 type Query {
   hi: Boolean!
   me: User!
@@ -209,6 +221,8 @@ type Query {
   seeRestaurants(input: SeeRestaurantsInput!): SeeRestaurantsOutput!
   seeRestaurant(input: SeeRestaurantInput!): SeeRestaurantOutput!
   searchRestaurants(input: SearchRestaurantsInput!): SearchRestaurantsOutput!
+  getOrders(input: GetOrdersInput!): GetOrdersOutput!
+  getOrder(input: GetOrderInput!): GetOrderOutput!
 }
 
 input CategoryInput {
@@ -227,6 +241,14 @@ input SeeRestaurantInput {
 input SearchRestaurantsInput {
   page: Float = 1
   query: String!
+}
+
+input GetOrdersInput {
+  status: OrderStatus
+}
+
+input GetOrderInput {
+  id: Float!
 }
 
 type Mutation {
