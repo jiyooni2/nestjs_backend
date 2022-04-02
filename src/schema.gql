@@ -68,6 +68,7 @@ type Order {
 enum OrderStatus {
   Pending
   Cooking
+  Cooked
   PickedUp
   Delivered
 }
@@ -211,6 +212,11 @@ type GetOrderOutput {
   order: Order
 }
 
+type EditOrderOutput {
+  ok: Boolean!
+  error: String
+}
+
 type Query {
   hi: Boolean!
   me: User!
@@ -263,6 +269,7 @@ type Mutation {
   editDish(input: EditDishInput!): EditDishOutput!
   deleteDish(input: DeleteDishInput!): DeleteDishOutput!
   createOrder(input: CreateOrderInput!): CreateOrderOutput!
+  editOrder(input: EditOrderInput!): EditOrderOutput!
 }
 
 input CreateAccountInput {
@@ -348,4 +355,9 @@ input CreateOrderItemInput {
 input OrderItemOptionInputType {
   name: String!
   choice: String
+}
+
+input EditOrderInput {
+  id: Float!
+  status: OrderStatus!
 }
