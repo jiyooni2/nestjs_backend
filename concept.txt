@@ -638,5 +638,44 @@ array.flat()
     모든 하위 array의 요소와 함께 새 array를 리턴 
     ex) flat(1) : 1차원 array안에 모든 아이템을 넣어줌
     
+
+Subscription
+    graphql-subscription allows you to use subscription in graphql
+    실시간으로 무언가 처리
+
+    PubSub : publish and subscribe
+        app 내부에서 메세지 교환
+    
+    pubsub.asyncIterator(trigger)를 return 해야 함
+        trigger : 우리가 기다리는 event, just string
+        trigger 이벤트를 듣고 싶으면, subscription을 쓰면 됨 
+
+    subscription이 연결하는 방법이 API를 연결하는 방법과 다름
+    subscription에 연결하는 순간 HTTP route를 거치지 않고 Web Socket Route를 거침
+    HTTP에서 사용했던 request is undefined.
+    websocket에는 request없음, connection
+    쿠키를 보내고 받고 그런 것이 없고 일단 연결되면 연결상태 유지(not stateless)
+
+    HTTP에서는 매번 request할 때 마다 token을 보냄
+    ws는 딱 한번만 보냄, 연결을 시작할 때 토큰을 보내는데 연결이 끝나지 않음
+    많은 이벤트를 받고 보낼 수 있고 토큰을 다시 보낼 필요가 없음
+
+    event waiting
+        pubsub.publish("event",{resolver:"msg"});
+        payload에는 resolver함수의 이름이 있어야 함
+        event를 listening하고 있다가, 받으면 함수 작동
+
+ws
+    프로토콜의 일종, real time을 처리하는 web socket
+    web socket을 활성화 해야 하고, http,ws 두 곳에서 모두 서버가 돌아갈 수 있어야 함 
+    graphql module에 installSubscriptionHandlers:true
+    graphql 서버가 웹 소켓 기능을 가지게 됨
+    
+    우리가 사용했던 X-JWT : HTTP Header에 포함, ws에서 사용 불가
+    다른 방법을 찾아야 함
+
+    APP_GUARD is working for http and ws.
+
+
 멱등성
 

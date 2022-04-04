@@ -218,7 +218,7 @@ export class RestaurantsService {
   }: SeeRestaurantInput): Promise<SeeRestaurantOutput> {
     try {
       const restaurant = await this.restaurants.findOne(restaurantId, {
-        relations: ['menu'],
+        relations: ['menu', 'owner'],
       });
       if (!restaurant) {
         return { ok: false, error: 'Restaurant Not Found' };

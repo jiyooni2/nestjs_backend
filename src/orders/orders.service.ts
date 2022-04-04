@@ -161,11 +161,12 @@ export class OrdersService {
 
     if (user.role === UserRole.Client && order.customerId !== user.id) {
       canSee = false;
-    }
-    if (user.role === UserRole.Delivery && order.driverId !== user.id) {
+    } else if (user.role === UserRole.Delivery && order.driverId !== user.id) {
       canSee = false;
-    }
-    if (user.role === UserRole.Owner && order.restaurant.ownerId !== user.id) {
+    } else if (
+      user.role === UserRole.Owner &&
+      order.restaurant.ownerId !== user.id
+    ) {
       canSee = false;
     }
 
@@ -177,7 +178,9 @@ export class OrdersService {
     { id: orderId, status }: EditOrderInput,
   ): Promise<EditOrderOutput> {
     try {
-      const order = await this.orders.findOne(orderId);
+      const order = await this.orders.findOne(orderId, {
+        relations: ['restaurant'],
+      });
       if (!order) {
         return { ok: false, error: 'Order Not Found' };
       }
@@ -188,16 +191,20 @@ export class OrdersService {
 
       if (user.role === UserRole.Owner) {
         if (status !== OrderStatus.Cooking && status !== OrderStatus.Cooked) {
-          return { ok: false, error: 'Can not edit' };
+          return {
+            ok: false,
+            error: 'Can change the status only to cooking and cooked',
+          };
         }
-      }
-
-      if (user.role === UserRole.Delivery) {
+      } else if (user.role === UserRole.Delivery) {
         if (
           status !== OrderStatus.PickedUp &&
           status !== OrderStatus.Delivered
         ) {
-          return { ok: false, error: 'Can not edit' };
+          return {
+            ok: false,
+            error: 'Can change the status only to pickedup and delivered',
+          };
         }
       }
 
