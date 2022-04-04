@@ -676,6 +676,14 @@ ws
 
     APP_GUARD is working for http and ws.
 
+pubsub
+    Application level에서 한 개여야 함
+    서버가 여러개이면 다른 방법을 찾아봐야 함
+    
+subscription filter
+    args로 넘어온 것만 listening할 수 있음
+    can filter by payload, variables, context
+    
 
 멱등성
 

@@ -72,12 +72,21 @@ import { OrderItem } from './orders/entities/order-item.entity';
       installSubscriptionHandlers: true,
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      context: ({ req, connection }) => {
-        const TOKEN_KEY = 'X-JWT';
-        //gqlContext 제공
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect: (connectionParams: any) => {
+            console.log(connectionParams);
 
+            return {
+              token: connectionParams['x-jwt'],
+            };
+          },
+        },
+      },
+      context: ({ req }) => {
+        //gqlContext 제공
         return {
-          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+          token: req.headers['x-jwt'],
         };
       },
     }),

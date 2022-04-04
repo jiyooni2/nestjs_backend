@@ -270,7 +270,7 @@ type Mutation {
   deleteDish(input: DeleteDishInput!): DeleteDishOutput!
   createOrder(input: CreateOrderInput!): CreateOrderOutput!
   editOrder(input: EditOrderInput!): EditOrderOutput!
-  triggerAnything: Boolean!
+  triggerAnything(id: Float!): Boolean!
 }
 
 input CreateAccountInput {
@@ -364,5 +364,5 @@ input EditOrderInput {
 }
 
 type Subscription {
-  orderSubscription: String!
+  orderSubscription(id: Float!): String!
 }
