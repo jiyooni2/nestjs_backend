@@ -11,7 +11,12 @@ import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
 import { PubSub } from 'graphql-subscriptions';
 import { Inject } from '@nestjs/common';
-import { PUB_SUB } from 'src/common/common.constants';
+import { NEW_COOKED_ORDER, PUB_SUB } from 'src/common/common.constants';
+import {
+  NEW_PENDING_ORDER,
+  NEW_ORDER_UPDATE,
+} from './../common/common.constants';
+import { OrderUpdatesInput } from './dtos/order-updates.dto';
 
 @Resolver((of) => Order)
 export class OrderResolver {
@@ -56,20 +61,44 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
-  @Mutation((returns) => Boolean)
-  async triggerAnything(@Args('id') id: number) {
-    await this.pubSub.publish('anything', { orderSubscription: `ready ${id}` });
-    return true;
+  @Subscription((returns) => Order, {
+    filter: ({ pendingOrders }, _, { user }) => {
+      return user.id === pendingOrders.restaurant.ownerId;
+    },
+    resolve: ({ pendingOrders }) => {
+      return pendingOrders;
+    },
+  })
+  @Role(['Owner'])
+  pendingOrders() {
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER);
   }
 
-  @Subscription((returns) => String, {
-    filter: (payload, variables, context) => {
-      return payload.orderSubscription === `ready ${variables.id}`;
+  //driver can access to all the orders
+  @Subscription((returns) => Order)
+  @Role(['Delivery'])
+  cookedOrders() {
+    return this.pubSub.asyncIterator(NEW_COOKED_ORDER);
+  }
+
+  @Subscription((returns) => Order, {
+    filter: (
+      { orderUpdates: order }: { orderUpdates: Order },
+      { input }: { input: OrderUpdatesInput },
+      { user }: { user: User },
+    ) => {
+      if (
+        order.driverId !== user.id &&
+        order.customerId !== user.id &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return false;
+      }
+      return order.id === input.id;
     },
   })
   @Role(['Any'])
-  orderSubscription(@AuthUser() user: User, @Args('id') id: number) {
-    console.log(user);
-    return this.pubSub.asyncIterator('anything');
+  orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
+    return this.pubSub.asyncIterator(NEW_ORDER_UPDATE);
   }
 }

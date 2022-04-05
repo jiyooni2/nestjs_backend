@@ -1,4 +1,4 @@
-import { flatten, Injectable } from '@nestjs/common';
+import { flatten, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, OrderStatus } from './entities/order.entity';
@@ -10,7 +10,12 @@ import { Dish } from '../restaurants/entities/dish.entity';
 import { GetOrdersInput, GetOrdersOutput } from './dtos/get-orders.dto';
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto';
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto';
-import { ok } from 'assert';
+import { NEW_COOKED_ORDER, PUB_SUB } from '../common/common.constants';
+import { PubSub } from 'graphql-subscriptions';
+import {
+  NEW_PENDING_ORDER,
+  NEW_ORDER_UPDATE,
+} from './../common/common.constants';
 
 @Injectable()
 export class OrdersService {
@@ -23,6 +28,7 @@ export class OrdersService {
     private readonly orderItems: Repository<OrderItem>,
     @InjectRepository(Dish)
     private readonly dishes: Repository<Dish>,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
   ) {}
 
   async createOrder(
@@ -87,6 +93,13 @@ export class OrdersService {
           items: orderItemsList,
         }),
       );
+      order.restaurant.ownerId = restaurant.ownerId;
+
+      //NEW_PENDING_ORDER event 발생
+      //pendingOrders의 결과로 order를 받을 수 있게 넘겨줌
+      await this.pubSub.publish(NEW_PENDING_ORDER, {
+        pendingOrders: order,
+      });
 
       return { ok: true };
     } catch (error) {
@@ -178,9 +191,7 @@ export class OrdersService {
     { id: orderId, status }: EditOrderInput,
   ): Promise<EditOrderOutput> {
     try {
-      const order = await this.orders.findOne(orderId, {
-        relations: ['restaurant'],
-      });
+      const order = await this.orders.findOne(orderId);
       if (!order) {
         return { ok: false, error: 'Order Not Found' };
       }
@@ -208,12 +219,22 @@ export class OrdersService {
         }
       }
 
-      this.orders.save([
-        {
-          id: orderId,
-          status,
-        },
-      ]);
+      await this.orders.save({
+        id: orderId,
+        status,
+      });
+
+      const newOrder = { ...order, status };
+
+      if (user.role === UserRole.Owner) {
+        if (status === OrderStatus.Cooked) {
+          await this.pubSub.publish(NEW_COOKED_ORDER, {
+            cookedOrders: newOrder,
+          });
+        }
+      }
+
+      await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder });
 
       return { ok: true };
     } catch (error) {

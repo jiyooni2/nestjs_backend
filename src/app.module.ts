@@ -75,8 +75,6 @@ import { OrderItem } from './orders/entities/order-item.entity';
       subscriptions: {
         'subscriptions-transport-ws': {
           onConnect: (connectionParams: any) => {
-            console.log(connectionParams);
-
             return {
               token: connectionParams['x-jwt'],
             };

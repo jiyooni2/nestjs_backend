@@ -659,6 +659,8 @@ Subscription
     HTTP에서는 매번 request할 때 마다 token을 보냄
     ws는 딱 한번만 보냄, 연결을 시작할 때 토큰을 보내는데 연결이 끝나지 않음
     많은 이벤트를 받고 보낼 수 있고 토큰을 다시 보낼 필요가 없음
+    db에 접근하지 않고 메세지를 전달할 수 있음
+
 
     event waiting
         pubsub.publish("event",{resolver:"msg"});
@@ -683,7 +685,42 @@ pubsub
 subscription filter
     args로 넘어온 것만 listening할 수 있음
     can filter by payload, variables, context
-    
+    should return boolean
+    true일 경우 listen
 
-멱등성
+subscription resolve
+    response의 내용을 바꿀 수 있음
 
+
+ex)
+      @Mutation((returns) => Boolean)
+  async triggerAnything(@Args('id') id: number) {
+    await this.pubSub.publish('anything', { orderSubscription: `ready ${id}` });
+    return true;
+  }
+
+  @Subscription((returns) => String, {
+    filter: (payload, variables, context) => {
+      return payload.orderSubscription === `ready ${variables.id}`;
+    },
+    resolve:({triggerAnything})=>`Your`
+  })
+  @Role(['Any'])
+  orderSubscription(@AuthUser() user: User, @Args('id') id: number) {
+    console.log(user);
+    return this.pubSub.asyncIterator('anything');
+  }
+
+
+create vs save return
+    save : 전체를 return 하지 않음
+    create : 전체를 return
+
+
+Eager Relation
+    relation loaded automatically each time you load entities from the DB
+    성능저하는 주의해야 함
+
+Lazy Relation
+    relation loaded once you access them
+    await, Promise를 사용해서 그 필드를 access하면 typeORM이 load
