@@ -16,6 +16,7 @@ import {
   NEW_PENDING_ORDER,
   NEW_ORDER_UPDATE,
 } from './../common/common.constants';
+import { TakeOrderInput, TakeOrderOutput } from './dtos/taker-order.dto';
 
 @Injectable()
 export class OrdersService {
@@ -235,6 +236,38 @@ export class OrdersService {
       }
 
       await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder });
+
+      return { ok: true };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async takeOrder(
+    driver: User,
+    { id: orderId }: TakeOrderInput,
+  ): Promise<TakeOrderOutput> {
+    try {
+      const order = await this.orders.findOne(orderId);
+
+      if (!order) {
+        return { ok: false, error: 'Order Not Found' };
+      }
+
+      if (order.driver) {
+        return { ok: false, error: 'This order already has a driver' };
+      }
+
+      await this.orders.save({
+        id: orderId,
+        driver,
+      });
+
+      order.driver = driver;
+
+      await this.pubSub.publish(NEW_ORDER_UPDATE, {
+        orderUpdates: order,
+      });
 
       return { ok: true };
     } catch (error) {
