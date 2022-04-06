@@ -512,6 +512,7 @@ E2E testing
 
 ManyToOne, OneToMany 같은 것 설정할때,
     DB nullable이랑, onUpdate, onDelete 설정
+    ManyToOne을 설정할 때, OneToMany가 반대편에 없어도 생성할 수 있음
 
 ObjectType과 InputType이 같은 이름을 가지면 type을 구분 못해서 에러가 발생
     이름을 다르게 지어주는게 좋음
