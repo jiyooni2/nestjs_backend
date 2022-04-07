@@ -113,6 +113,8 @@ type Restaurant {
   category: Category
   menu: [Dish!]!
   orders: [Order!]!
+  isPromoted: Boolean!
+  promotedUntil: DateTime
 }
 
 type CreateRestaurantOutput {
